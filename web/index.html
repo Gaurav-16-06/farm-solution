@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>सोनपुर सेवा समिति | Sonpur Sewa Samiti - Smart Agri Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="device-container">
+    <!-- Mobile App Container -->
+    <div class="mobile-app" id="app">
+      
+      <!-- Top App Header with Official Brand Emblem -->
+      <header class="app-header">
+        <div class="header-brand">
+          <div class="emblem-logo-container">
+            <img src="assets/logo.svg" alt="Sonpur Sewa Samiti Logo" class="header-logo-img">
+          </div>
+          <div class="header-titles">
+            <h1 class="app-title" id="appTitle">सोनपुर सेवा समिति</h1>
+            <p class="app-subtitle" id="appSubtitle">जेठवारा, प्रतापगढ़ • सेवा • सहयोग • समर्पण</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <!-- Language Switcher Pill -->
+          <button class="lang-toggle-btn" id="langToggleBtn" onclick="toggleLanguage()">
+            <span class="material-symbols-rounded">translate</span>
+            <span id="langBtnText">English</span>
+          </button>
+          
+          <!-- Theme Switcher -->
+          <button class="icon-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+            <span class="material-symbols-rounded" id="themeIcon">dark_mode</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Views (4 Tabs: 0=Calendar, 1=Store, 2=Scan(Center), 3=Admin) -->
+      <main class="app-content" id="mainContent">
+
+        <!-- ================= TAB 0: CROP CALENDAR ================= -->
+        <section class="tab-view" id="tabCalendar">
+          <div class="section-header-row mb-12">
+            <div>
+              <h2 class="section-title-large" id="txtCalTitle">फसल विकास चक्र</h2>
+              <p class="section-subtitle" id="txtCalSubtitle">बुवाई से कटाई तक हर चरण की पूरी निगरानी</p>
+            </div>
+            <button class="btn-primary-sm" onclick="openAddCropModal()">
+              <span class="material-symbols-rounded">add</span>
+              <span id="txtBtnAddCrop">नई फसल</span>
+            </button>
+          </div>
+
+          <!-- Active Crops Horizontal Selector -->
+          <div class="chips-scroll mb-14" id="cropSelectorChips">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Active Crop Stage Card -->
+          <div class="crop-dossier-card" id="cropDossierCard">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Upcoming Tasks Checklist -->
+          <div class="section-container mt-16">
+            <div class="section-header-row mb-8">
+              <span class="section-title" id="txtTasksTitle">आगामी जरूरी कार्य</span>
+              <span class="badge badge-success" id="taskDoneCount">1/3 Done</span>
+            </div>
+            <div class="tasks-list" id="tasksList">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Sonpur Weather Banner -->
+          <div class="weather-alert-card mt-16">
+            <span class="material-symbols-rounded weather-icon">cloud_sync</span>
+            <div class="weather-text">
+              <h4 id="txtWeatherTitle">सोनपुर कृषि मौसम परामर्श</h4>
+              <p id="txtWeatherDesc">तापमान 26°C, आर्द्रता 62%। आगामी 2 दिनों में हल्की पछुआ हवा चलने का अनुमान है। गेहूं में सुबह हल्की सिंचाई करें।</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB 1: STORE & FERTILIZER CALC ================= -->
+        <section class="tab-view" id="tabStore">
+          <!-- Dual Sub-Tab Navigation Header -->
+          <div class="sub-tab-bar">
+            <button class="sub-tab-btn active" id="subTabCalcBtn" onclick="switchSubTab('calc')">
+              <span class="material-symbols-rounded">calculate</span>
+              <span id="txtSubTabCalc">खाद कैलकुलेटर</span>
+            </button>
+            <button class="sub-tab-btn" id="subTabStoreBtn" onclick="switchSubTab('store')">
+              <span class="material-symbols-rounded">storefront</span>
+              <span id="txtSubTabStore">किसान सेवा भंडार</span>
+            </button>
+          </div>
+
+          <!-- SUB-VIEW 1: FERTILIZER CALCULATOR -->
+          <div class="sub-view-pane active" id="subViewCalc">
+            <div class="calc-card">
+              <div class="form-group">
+                <label id="lblSelectCrop">फसल चुनें (Select Crop)</label>
+                <select id="calcCropSelect" class="form-control" onchange="runFertilizerCalc()">
+                  <option value="wheat">गेहूं (Wheat - HD-2967)</option>
+                  <option value="paddy">धान (Paddy / Rice)</option>
+                  <option value="mustard">सरसों (Mustard - Pusa Jai Kisan)</option>
+                  <option value="potato">आलू (Potato)</option>
+                  <option value="sugarcane">गन्ना (Sugarcane)</option>
+                  <option value="maize">मक्का (Maize / Corn)</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group flex-3">
+                  <label id="lblLandArea">क्षेत्रफल (Land Area)</label>
+                  <input type="number" id="calcAreaInput" class="form-control" value="1.0" step="0.5" min="0.1" oninput="runFertilizerCalc()">
+                </div>
+                <div class="form-group flex-2">
+                  <label id="lblLandUnit">इकाई (Unit)</label>
+                  <select id="calcUnitSelect" class="form-control" onchange="runFertilizerCalc()">
+                    <option value="Acre">एकड़ (Acre)</option>
+                    <option value="Bigha">बीघा (Bigha = 0.625 Acre)</option>
+                    <option value="Hectare">हेक्टेयर (Hectare)</option>
+                    <option value="Kattha">कट्ठा (Kattha)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Quick Area Presets -->
+              <div class="presets-row">
+                <span class="preset-label">Presets:</span>
+                <button class="preset-pill" onclick="setPresetArea(0.5)">0.5</button>
+                <button class="preset-pill active" onclick="setPresetArea(1.0)">1.0</button>
+                <button class="preset-pill" onclick="setPresetArea(2.5)">2.5</button>
+                <button class="preset-pill" onclick="setPresetArea(5.0)">5.0</button>
+              </div>
+            </div>
+
+            <!-- Calculation Output Dossier -->
+            <div class="calc-result-dossier" id="calcResultDossier">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 2: KISAN STORE -->
+          <div class="sub-view-pane" id="subViewStore">
+            <div class="search-bar">
+              <span class="material-symbols-rounded search-icon">search</span>
+              <input type="text" id="storeSearchInput" class="search-input" placeholder="श्रीराम खाद, बीज या कीटनाशक खोजें..." oninput="filterStoreProducts()">
+            </div>
+
+            <div class="chips-scroll mt-10 mb-12">
+              <button class="chip active" onclick="filterStoreCategory('all', this)"><span id="catAll">सभी उत्पाद</span></button>
+              <button class="chip" onclick="filterStoreCategory('fertilizer', this)"><span id="catFertilizer">श्रीराम रासायनिक खाद</span></button>
+              <button class="chip" onclick="filterStoreCategory('pesticide', this)"><span id="catPesticide">कीटनाशक व फफूंदनाशी</span></button>
+            </div>
+
+            <div class="products-grid" id="productsGrid">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB 2: SCAN & DIAGNOSE (CENTER TAB) ================= -->
+        <section class="tab-view active" id="tabScan">
+          
+          <!-- Shop Storefront Hero Banner Card -->
+          <div class="shop-hero-card">
+            <div class="shop-hero-img-wrapper">
+              <img src="assets/shop_front.jpg" alt="Sonpur Sewa Samiti Shop Front" class="shop-hero-img">
+              <div class="shop-hero-badge">
+                <span class="material-symbols-rounded badge-verified-icon">verified</span>
+                <span>अधिकृत किसान सेवा केंद्र • जेठवारा, प्रतापगढ़</span>
+              </div>
+            </div>
+            
+            <div class="shop-hero-content">
+              <div class="shop-brand-row">
+                <div class="shop-logo-mini">
+                  <img src="assets/logo.svg" alt="Logo">
+                </div>
+                <div>
+                  <h3 class="shop-main-name">सोनपुर सेवा समिति (Sonpur Sewa Samiti)</h3>
+                  <p class="shop-tagline">कृषि सहकारिता, खाद एवं उन्नत बीज भंडार</p>
+                </div>
+              </div>
+
+              <!-- Contact & Location Box -->
+              <div class="shop-contact-box">
+                <div class="contact-line">
+                  <span class="material-symbols-rounded text-red">location_on</span>
+                  <span><strong>पता:</strong> यूपी ग्रामीण बैंक के पास, जेठवारा, प्रतापगढ़, उत्तर प्रदेश 230129</span>
+                </div>
+                <div class="contact-line mt-4">
+                  <span class="material-symbols-rounded text-green">call</span>
+                  <span><strong>हेल्पलाइन / फोन:</strong> <a href="tel:8269202960" class="phone-link">8269202960</a></span>
+                </div>
+              </div>
+
+              <!-- 1-Tap Quick Action Buttons -->
+              <div class="shop-quick-actions">
+                <a href="tel:8269202960" class="btn-action call-btn">
+                  <span class="material-symbols-rounded">phone_in_talk</span>
+                  <span>कॉल करें (8269202960)</span>
+                </a>
+                <a href="https://wa.me/918269202960?text=Namaste%20Sonpur%20Sewa%20Samiti%2C%20mujhe%20krishi%20sahayata%20chahiye" target="_blank" class="btn-action whatsapp-btn">
+                  <span class="material-symbols-rounded">chat</span>
+                  <span>WhatsApp चैट</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gemini Vision AI Banner -->
+          <div class="gemini-banner mt-14">
+            <div class="banner-icon-box">
+              <span class="material-symbols-rounded">photo_camera</span>
+            </div>
+            <div class="banner-text">
+              <div class="banner-header-row">
+                <h2 id="txtScanTitle">एआई फसल डॉक्टर (Camera Scan)</h2>
+                <span class="gemini-pill"><span class="material-symbols-rounded gemini-spark">auto_awesome</span> Gemini Vision AI</span>
+              </div>
+              <p id="txtScanSubtitle">पत्ती स्कैन कर तुरंत पाएं रोग पहचान व श्रीराम फर्टिलाइजर्स का सटीक उपचार</p>
+            </div>
+          </div>
+
+          <!-- Interactive AI Camera Viewfinder -->
+          <div class="viewfinder-card" id="viewfinderCard">
+            <div class="viewfinder-camera-controls">
+              <div class="status-indicator">
+                <span class="status-dot pulse" id="scannerStatusDot"></span>
+                <span class="status-label" id="scannerStatusLabel">GEMINI VISION READY</span>
+              </div>
+              <div class="cam-tools">
+                <button class="cam-tool-btn" id="flashBtn" onclick="toggleFlash()"><span class="material-symbols-rounded">flash_off</span></button>
+                <button class="cam-tool-btn" onclick="showToast('Macro Optical Sensor Active')"><span class="material-symbols-rounded">cameraswitch</span></button>
+              </div>
+            </div>
+
+            <!-- Leaf Illustration & Laser scanning line -->
+            <div class="viewfinder-center">
+              <span class="material-symbols-rounded viewfinder-leaf-icon" id="viewfinderLeafIcon">eco</span>
+              <div class="scan-laser" id="scanLaser"></div>
+              <div class="grid-overlay"></div>
+              <div class="corner-bracket tl"></div>
+              <div class="corner-bracket tr"></div>
+              <div class="corner-bracket bl"></div>
+              <div class="corner-bracket br"></div>
+            </div>
+
+            <!-- Analyzing Pulse Spinner Overlay -->
+            <div class="scanning-loader-overlay" id="scanningOverlay">
+              <div class="spinner"></div>
+              <p id="scanningLoaderText">Gemini Vision AI पत्ती का विश्लेषण कर रहा है...</p>
+            </div>
+          </div>
+
+          <!-- Sample Disease Demo Selectors -->
+          <div class="section-container">
+            <div class="section-header-row">
+              <span class="section-title" id="txtSampleTitle">उदाहरण पत्ती स्कैन जांचें</span>
+              <span class="tag-accent" id="txtOneTap">1-क्लिक टेस्ट</span>
+            </div>
+            <div class="chips-scroll">
+              <button class="chip active" onclick="selectSample('wheat_rust', this)"><span class="material-symbols-rounded icon-wheat">grain</span> <span id="chipWheat">गेहूं पीला रतुआ</span></button>
+              <button class="chip" onclick="selectSample('potato_blight', this)"><span class="material-symbols-rounded icon-potato">spa</span> <span id="chipPotato">आलू पछेती झुलसा</span></button>
+              <button class="chip" onclick="selectSample('mustard_aphid', this)"><span class="material-symbols-rounded icon-aphid">bug_report</span> <span id="chipMustard">सरसों माहू कीट</span></button>
+              <button class="chip" onclick="selectSample('paddy_healthy', this)"><span class="material-symbols-rounded icon-healthy">verified</span> <span id="chipPaddy">स्वस्थ धान पत्ती</span></button>
+            </div>
+          </div>
+
+          <!-- Scan Action Buttons -->
+          <div class="scan-actions-row">
+            <button class="btn-primary flex-3" id="btnScanNow" onclick="runGeminiScan()">
+              <span class="material-symbols-rounded">photo_camera</span>
+              <span id="txtBtnScan">पत्ती स्कैन करें (Camera AI)</span>
+            </button>
+            <button class="btn-outlined flex-2" onclick="runGeminiScan()">
+              <span class="material-symbols-rounded">photo_library</span>
+              <span id="txtBtnGallery">गैलरी</span>
+            </button>
+          </div>
+
+          <!-- Dynamic Active Scan Result Dossier -->
+          <div class="scan-result-container" id="scanResultContainer">
+            <!-- Injected via JavaScript with Shriram products, 1-Acre dosages, and live store inventory -->
+          </div>
+
+          <!-- Scan History List -->
+          <div class="section-container mt-16">
+            <div class="section-header-row">
+              <span class="section-title" id="txtHistoryTitle">हालिया जांच रिकॉर्ड</span>
+              <span class="text-muted" id="historyCount">3 Records</span>
+            </div>
+            <div class="history-list" id="historyList">
+              <!-- Rendered via JavaScript -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TAB 3: ADMIN PANEL ================= -->
+        <section class="tab-view" id="tabAdmin">
+          <!-- Shop Overview in Admin -->
+          <div class="card" style="border-left: 4px solid var(--primary-green);">
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <img src="assets/logo.svg" style="width: 36px; height: 36px;" alt="Logo">
+              <div>
+                <strong style="font-size: 14px;">सोनपुर सेवा समिति (Sonpur Sewa Samiti)</strong>
+                <p style="font-size: 11px; color: var(--text-secondary);">स्थान: जेठवारा, प्रतापगढ़ (उ.प्र.) 230129 • फोन: 8269202960</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-banner mt-10">
+            <div class="banner-icon-box">
+              <span class="material-symbols-rounded">admin_panel_settings</span>
+            </div>
+            <div class="banner-text">
+              <h2 id="txtAdminTitle">सहकारी समिति प्रबंधन</h2>
+              <p id="txtAdminSubtitle">सोनपुर सेवा समिति कार्यकारी डैशबोर्ड</p>
+            </div>
+          </div>
+
+          <!-- Executive KPI Cards -->
+          <div class="kpi-grid mt-12">
+            <div class="kpi-card">
+              <div class="kpi-icon-box bg-green"><span class="material-symbols-rounded">groups</span></div>
+              <div>
+                <p class="kpi-label" id="txtTotalFarmers">पंजीकृत किसान</p>
+                <h3 class="kpi-val">1,420</h3>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box bg-amber"><span class="material-symbols-rounded">contact_support</span></div>
+              <div>
+                <p class="kpi-label" id="txtPendingQueries">लंबित सवाल</p>
+                <h3 class="kpi-val" id="kpiPendingCount">1</h3>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box bg-blue"><span class="material-symbols-rounded">inventory_2</span></div>
+              <div>
+                <p class="kpi-label">श्रीराम यूरिया बोरी</p>
+                <h3 class="kpi-val" id="kpiUreaStock">850</h3>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box bg-brown"><span class="material-symbols-rounded">grain</span></div>
+              <div>
+                <p class="kpi-label">श्रीराम डीएपी बोरी</p>
+                <h3 class="kpi-val" id="kpiDapStock">420</h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Stock Controller -->
+          <div class="stock-manager-card mt-14">
+            <div class="section-header-row mb-8">
+              <span class="section-title" id="txtStockManager">खाद स्टॉक कंट्रोलर (Quick Stock)</span>
+              <span class="material-symbols-rounded text-green">tune</span>
+            </div>
+
+            <div class="stock-item-row">
+              <div>
+                <strong class="stock-name">श्रीराम नीम लेपित यूरिया (Urea)</strong>
+                <p class="stock-avail" id="stockUreaText">850 Bags in Warehouse</p>
+              </div>
+              <div class="stock-btns">
+                <button class="btn-stock-adjust" onclick="adjustStock('prod_shriram_urea', -50)">-50</button>
+                <button class="btn-stock-adjust add" onclick="adjustStock('prod_shriram_urea', 50)">+50</button>
+              </div>
+            </div>
+
+            <div class="stock-item-row mt-8">
+              <div>
+                <strong class="stock-name">श्रीराम डीएपी 18:46:0 (DAP)</strong>
+                <p class="stock-avail" id="stockDapText">420 Bags in Warehouse</p>
+              </div>
+              <div class="stock-btns">
+                <button class="btn-stock-adjust" onclick="adjustStock('prod_shriram_dap', -50)">-50</button>
+                <button class="btn-stock-adjust add" onclick="adjustStock('prod_shriram_dap', 50)">+50</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Broadcast Notice Section -->
+          <div class="section-container mt-16">
+            <div class="section-header-row mb-8">
+              <span class="section-title" id="txtNoticesTitle">जारी सूचनाएं व अलर्ट</span>
+              <button class="btn-primary-sm" onclick="openPublishNoticeModal()">
+                <span class="material-symbols-rounded">campaign</span>
+                <span id="txtBtnPublishNotice">सूचना भेजें</span>
+              </button>
+            </div>
+            <div class="notices-list" id="noticesList">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Farmer Queries Section -->
+          <div class="section-container mt-16">
+            <span class="section-title mb-8" id="txtQueriesTitle">किसान परामर्श एवं समस्याएं</span>
+            <div class="queries-list" id="queriesList">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Floating Support Action: 1-Tap Direct Call & WhatsApp Bar -->
+      <div class="floating-support-bar">
+        <a href="tel:8269202960" class="floating-btn call-fab" title="Call Store">
+          <span class="material-symbols-rounded">call</span>
+          <span>8269202960</span>
+        </a>
+        <a href="https://wa.me/918269202960?text=Namaste%20Sonpur%20Sewa%20Samiti" target="_blank" class="floating-btn whatsapp-fab" title="WhatsApp Chat">
+          <span class="material-symbols-rounded">chat</span>
+          <span>WhatsApp</span>
+        </a>
+      </div>
+
+      <!-- Floating Cart Button -->
+      <button class="floating-cart-btn" id="floatingCartBtn" onclick="openCartModal()">
+        <span class="material-symbols-rounded">shopping_basket</span>
+        <span id="floatingCartText">1 सामग्री (₹490)</span>
+      </button>
+
+      <!-- Reordered Bottom Navigation Bar with Prominent Center Camera Button (Tab index 2) -->
+      <nav class="bottom-nav">
+        <!-- Tab 0: Crop Calendar -->
+        <button class="nav-item" id="navItem0" onclick="switchTab(0)">
+          <span class="material-symbols-rounded nav-icon">calendar_month</span>
+          <span class="nav-label" id="navCalendar">फसल कैलेंडर</span>
+        </button>
+
+        <!-- Tab 1: Store & Fertilizer Calc -->
+        <button class="nav-item" id="navItem1" onclick="switchTab(1)">
+          <div class="nav-icon-badge-wrapper">
+            <span class="material-symbols-rounded nav-icon">storefront</span>
+            <span class="cart-badge-pill" id="navCartBadge">0</span>
+          </div>
+          <span class="nav-label" id="navStore">खाद व दुकान</span>
+        </button>
+
+        <!-- Tab 2 (CENTER): AI Disease Scanner with Prominent Floating Camera Icon -->
+        <button class="nav-item center-camera-btn active" id="navItem2" onclick="switchTab(2)">
+          <div class="camera-fab-circle">
+            <span class="material-symbols-rounded camera-icon">photo_camera</span>
+          </div>
+          <span class="nav-label font-bold" id="navScan">रोग जांच (स्कैन)</span>
+        </button>
+
+        <!-- Tab 3: Admin Panel -->
+        <button class="nav-item" id="navItem3" onclick="switchTab(3)">
+          <div class="nav-icon-badge-wrapper">
+            <span class="material-symbols-rounded nav-icon">admin_panel_settings</span>
+            <span class="admin-badge-dot" id="navAdminDot"></span>
+          </div>
+          <span class="nav-label" id="navAdmin">समिति प्रबंधन</span>
+        </button>
+      </nav>
+
+    </div>
+
+    <!-- Modals and Bottom Sheets -->
+
+    <!-- 1. Diagnosis Detail Modal -->
+    <div class="modal-backdrop" id="diagnosisModal">
+      <div class="modal-sheet">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-body" id="diagnosisModalBody">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Cart Bottom Sheet -->
+    <div class="modal-backdrop" id="cartModal">
+      <div class="modal-sheet">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-body" id="cartModalBody">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Add Crop Modal -->
+    <div class="modal-backdrop" id="addCropModal">
+      <div class="modal-sheet">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-body">
+          <div class="modal-header-row">
+            <h3 class="modal-title" id="txtModalAddCrop">नई फसल पंजीकृत करें</h3>
+            <button class="close-btn" onclick="closeModal('addCropModal')"><span class="material-symbols-rounded">close</span></button>
+          </div>
+          <div class="form-group mt-10">
+            <label>फसल प्रकार (Crop Type)</label>
+            <select id="modalCropType" class="form-control">
+              <option value="wheat">गेहूं (Wheat - HD-2967)</option>
+              <option value="paddy">धान (Paddy / Rice)</option>
+              <option value="mustard">सरसों (Mustard - Pusa Jai Kisan)</option>
+              <option value="potato">आलू (Potato)</option>
+            </select>
+          </div>
+          <div class="form-group mt-10">
+            <label>बीज की किस्म / वैरायटी</label>
+            <input type="text" id="modalCropVariety" class="form-control" value="HD-2967 High Yield">
+          </div>
+          <div class="form-row mt-10">
+            <div class="form-group flex-3">
+              <label>खेत का क्षेत्रफल</label>
+              <input type="number" id="modalCropSize" class="form-control" value="2.5">
+            </div>
+            <div class="form-group flex-2">
+              <label>इकाई</label>
+              <select id="modalCropUnit" class="form-control">
+                <option value="Acre">एकड़ (Acre)</option>
+                <option value="Bigha">बीघा (Bigha)</option>
+                <option value="Hectare">हेक्टेयर</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary w-full mt-16" onclick="submitAddCrop()">फसल सुरक्षित करें</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Publish Notice Modal -->
+    <div class="modal-backdrop" id="noticeModal">
+      <div class="modal-sheet">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-body">
+          <div class="modal-header-row">
+            <h3 class="modal-title">सूचना / चेतावनी जारी करें</h3>
+            <button class="close-btn" onclick="closeModal('noticeModal')"><span class="material-symbols-rounded">close</span></button>
+          </div>
+          <div class="form-group mt-10">
+            <label>सूचना का शीर्षक</label>
+            <input type="text" id="noticeTitleInput" class="form-control" placeholder="उदा: श्रीराम यूरिया की नई खेप उपलब्ध">
+          </div>
+          <div class="form-group mt-10">
+            <label>सूचना का विवरण</label>
+            <textarea id="noticeContentInput" class="form-control" rows="3" placeholder="समस्त किसान भाइयों को सूचित किया जाता है कि..."></textarea>
+          </div>
+          <button class="btn-primary w-full mt-16" onclick="submitPublishNotice()">सभी किसानों को SMS / ऐप पर भेजें</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Resolve Query Modal -->
+    <div class="modal-backdrop" id="resolveModal">
+      <div class="modal-sheet">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-body">
+          <div class="modal-header-row">
+            <h3 class="modal-title">विशेषज्ञ कृषि परामर्श भेजें</h3>
+            <button class="close-btn" onclick="closeModal('resolveModal')"><span class="material-symbols-rounded">close</span></button>
+          </div>
+          <div class="query-preview-box mt-10" id="resolveQueryPreview"></div>
+          <div class="form-group mt-10">
+            <label>सलाह / श्रीराम दवा की सिफारिश</label>
+            <textarea id="resolveResponseInput" class="form-control" rows="3" placeholder="दवा का नाम एवं 1 एकड़ अनुसार सही छिड़काव मात्रा लिखें..."></textarea>
+          </div>
+          <button class="btn-primary w-full mt-16" onclick="submitResolveQuery()">किसान को परामर्श भेजें</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Popup Notification -->
+    <div class="toast-container" id="toast"></div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
